@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" width="96" height="96" role="img" aria-label="Pinly">
+  <rect width="96" height="96" rx="24" fill="#E60023"/>
+  <path d="M48 20c11.05 0 20 8.73 20 19.5 0 8.1-5.02 16.2-15.05 24.31a8 8 0 0 1-9.9 0C33.02 55.7 28 47.6 28 39.5 28 28.73 36.95 20 48 20Z" fill="#fff"/>
+  <circle cx="48" cy="39" r="7.5" fill="#E60023"/>
+  <rect x="44.5" y="63" width="7" height="15" rx="3.5" fill="#fff"/>
+</svg>

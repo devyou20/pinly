@@ -1,26 +1,218 @@
 @import "tailwindcss";
 
+/* ---------------------------------------------------------------------------
+   Design tokens
+   --------------------------------------------------------------------------- */
+
+@theme {
+  /* Radii */
+  --radius-card: 16px;
+  --radius-pill: 24px;
+  --radius-sheet: 32px;
+
+  /* Type */
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+    Arial, sans-serif;
+
+  /* Motion */
+  --ease-out-soft: cubic-bezier(0.2, 0, 0, 1);
+}
+
+/* Light (default) + dark overrides, driven by class on <html>. */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg: #ffffff;
+  --surface: #ffffff;
+  --surface-alt: #f1f1f1;
+  --ink: #111111;
+  --ink-muted: #767676;
+  --accent: #e60023;
+  --accent-hover: #ad081b;
+  --secondary: #e9e9e9;
+  --secondary-hover: #dadada;
+  --field: #efefef;
+  --hairline: #e9e9e9;
+  --overlay: rgba(0, 0, 0, 0.4);
+  color-scheme: light;
+}
+
+.dark {
+  --bg: #111111;
+  --surface: #1a1a1a;
+  --surface-alt: #222222;
+  --ink: #ffffff;
+  --ink-muted: #b5b5b5;
+  --accent: #e60023;
+  --accent-hover: #ad081b;
+  --secondary: #2c2c2c;
+  --secondary-hover: #3a3a3a;
+  --field: #222222;
+  --hairline: #2f2f2f;
+  --overlay: rgba(0, 0, 0, 0.55);
+  color-scheme: dark;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-alt: var(--surface-alt);
+  --color-ink: var(--ink);
+  --color-ink-muted: var(--ink-muted);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-secondary: var(--secondary);
+  --color-secondary-hover: var(--secondary-hover);
+  --color-field: var(--field);
+  --color-hairline: var(--hairline);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* ---------------------------------------------------------------------------
+   Base
+   --------------------------------------------------------------------------- */
+
+html,
+body {
+  height: 100%;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow-x: hidden;
+}
+
+/* Pinterest-style focus ring: 4px translucent blue, never removed. */
+:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(0, 132, 255, 0.4);
+  border-radius: inherit;
+}
+
+/* Hide the ring for pointer interactions only. */
+:focus:not(:focus-visible) {
+  box-shadow: none;
+}
+
+::selection {
+  background: rgba(230, 0, 35, 0.18);
+}
+
+/* ---------------------------------------------------------------------------
+   Masonry — CSS columns. Cards must never break across a column.
+   --------------------------------------------------------------------------- */
+
+.masonry {
+  column-width: 236px;
+  column-gap: 16px;
+}
+
+.masonry > * {
+  break-inside: avoid;
+  -webkit-column-break-inside: avoid;
+  page-break-inside: avoid;
+  margin-bottom: 16px;
+  display: block;
+}
+
+/* Two columns on phones — 236px would leave a single column below ~500px. */
+@media (max-width: 640px) {
+  .masonry {
+    column-width: 160px;
+    column-gap: 8px;
+  }
+  .masonry > * {
+    margin-bottom: 8px;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Skeleton shimmer
+   --------------------------------------------------------------------------- */
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.skeleton {
+  position: relative;
+  overflow: hidden;
+  background: var(--surface-alt);
+}
+
+.skeleton::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.55),
+    transparent
+  );
+  animation: shimmer 1.4s infinite;
+}
+
+.dark .skeleton::after {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.07),
+    transparent
+  );
+}
+
+/* ---------------------------------------------------------------------------
+   Modal motion
+   --------------------------------------------------------------------------- */
+
+@keyframes modal-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-modal-in {
+  animation: modal-in 250ms var(--ease-out-soft) both;
+}
+
+.animate-fade-in {
+  animation: fade-in 250ms var(--ease-out-soft) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Thin scrollbars in scrollable panels. */
+.scrollbar-thin::-webkit-scrollbar {
+  width: 8px;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: var(--secondary);
+  border-radius: 8px;
 }

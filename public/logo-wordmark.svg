@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 260 72" width="260" height="72" role="img" aria-label="Pinly">
+  <rect x="4" y="8" width="56" height="56" rx="16" fill="#E60023"/>
+  <path d="M32 20c9.39 0 17 7.42 17 16.58 0 6.88-4.27 13.77-12.79 20.66a6.8 6.8 0 0 1-8.42 0C19.27 50.35 15 43.46 15 36.58 15 27.42 22.61 20 32 20Z" fill="#fff"/>
+  <circle cx="32" cy="36" r="6.4" fill="#E60023"/>
+  <text x="76" y="49" font-family="-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="38" font-weight="700" letter-spacing="-1.2" fill="#111111">Pinly</text>
+</svg>
