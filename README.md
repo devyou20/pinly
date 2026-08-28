@@ -24,7 +24,7 @@ comments — built with Next.js 15, Supabase, and Tailwind CSS v4.
 | Phase | Status |
 |---|---|
 | 1. Scaffold, Tailwind, Supabase clients, env wiring | Done |
-| 2. Migration, buckets, RLS verification | SQL written; awaiting run |
+| 2. Migration, buckets, RLS verification | Done — 8/8 RLS checks pass |
 | 3. Auth — signup, login, logout, route protection | Done |
 | 4. Design system primitives | Done |
 | 5. Top navigation | Done |
@@ -108,10 +108,24 @@ Open <http://localhost:3000>.
 | `npm run build:check` | Build into `.next-build` — safe to run **while `dev` is running** |
 | `npm start` | Serve the production build |
 | `npm run lint` | ESLint |
+| `npm run verify:rls` | Prove RLS by direct API call (creates then deletes two test users) |
 
 `npm run build` writes to the same `.next` the dev server reads from, which corrupts a
 running dev server (`Cannot find module './xxx.js'`). Use `build:check` to verify a build
 without stopping dev.
+
+## Verification
+
+`npm run verify:rls` proves the security model at the database rather than in the UI.
+It creates two throwaway users, then asserts:
+
+- signup auto-creates a `profiles` row (the `handle_new_user` trigger)
+- B cannot read A's private board — and *can* read A's public one, so the test is meaningful
+- B cannot delete, update, or forge a pin owned by A
+- an anonymous client cannot insert a pin
+- B cannot update A's profile
+
+Both users are deleted in a `finally` block, so the script leaves no residue.
 
 ## Architecture notes
 

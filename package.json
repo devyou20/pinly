@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "build:check": "NEXT_DIST_DIR=.next-build next build"
+    "build:check": "NEXT_DIST_DIR=.next-build next build",
+    "verify:rls": "tsx scripts/verify-rls.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.9.1",
