@@ -148,6 +148,12 @@ distinguishing the two, so the form can't be used to enumerate registered addres
 **`next=` redirect parameters are validated** in both the auth actions and the OAuth
 callback — must start with `/` and not `//`, otherwise it is an open redirect.
 
+**Confirmation emails point at the app, not Supabase's default.** `signUp` and
+`resend` both pass `emailRedirectTo` so the link lands on `/auth/callback`, which
+exchanges the code for the app's own session cookie. The resend reply is phrased so it
+reads identically whether or not the account exists — the same non-enumeration reasoning
+as the login errors.
+
 **Signup checks username availability before creating the auth user**, so the unique
 constraint on `profiles` cannot fail inside the trigger *after* `auth.users` already has
 a row. The database constraint remains the real guarantee.
