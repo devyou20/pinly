@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
-import { isSupabaseConfigured } from "@/lib/env";
+import { isSupabaseConfigured, siteUrl } from "@/lib/env";
 import {
   loginSchema,
   signupSchema,
@@ -11,6 +11,8 @@ import {
 
 const NOT_CONFIGURED =
   "Supabase isn't configured yet. Add your project URL and anon key to .env.local.";
+
+const emailRedirectTo = `${siteUrl}/auth/callback`;
 
 /** Only allow same-origin relative paths as post-auth redirects. */
 function safeRedirect(next: string | undefined | null): string {
@@ -89,7 +91,11 @@ export async function signup(
     email,
     password,
     // handle_new_user() reads these to populate the profiles row.
-    options: { data: { username, full_name: full_name || null } },
+    options: {
+      data: { username, full_name: full_name || null },
+      // The callback exchanges Supabase's code for the app's session cookie.
+      emailRedirectTo,
+    },
   });
 
   if (error) {
@@ -112,6 +118,36 @@ export async function signup(
 
   revalidatePath("/", "layout");
   return { ok: true, redirectTo: safeRedirect(next) };
+}
+
+/** Sends another confirmation link without revealing whether the account exists. */
+export async function resendConfirmation(email: string): Promise<{
+  ok: boolean;
+  message: string;
+}> {
+  if (!isSupabaseConfigured) return { ok: false, message: NOT_CONFIGURED };
+
+  const parsed = signupSchema.shape.email.safeParse(email);
+  if (!parsed.success) return { ok: false, message: "Enter a valid email address." };
+
+  const supabase = await createClient();
+  const { error } = await supabase.auth.resend({
+    type: "signup",
+    email: parsed.data,
+    options: { emailRedirectTo },
+  });
+
+  if (error) {
+    return {
+      ok: false,
+      message: "Couldn't send a confirmation email. Please try again shortly.",
+    };
+  }
+
+  return {
+    ok: true,
+    message: "If that account needs confirmation, a fresh link is on its way.",
+  };
 }
 
 export async function signOut(): Promise<void> {
