@@ -83,16 +83,23 @@ body {
   overflow-x: hidden;
 }
 
-/* Pinterest-style focus ring: 4px translucent blue, never removed. */
-:focus-visible {
-  outline: none;
-  box-shadow: 0 0 0 4px rgba(0, 132, 255, 0.4);
-  border-radius: inherit;
-}
-
-/* Hide the ring for pointer interactions only. */
-:focus:not(:focus-visible) {
-  box-shadow: none;
+/*
+ * Focus ring: 4px translucent blue on every keyboard-focused element.
+ *
+ * Must live in @layer base. Unlayered CSS outranks every cascade layer, so an
+ * unlayered rule here would beat Tailwind's utilities layer and a composite
+ * widget could never opt out — which produced a double ring on Input and
+ * SearchBar, where the *wrapper* is the visible field and the inner <input>
+ * needs `focus-visible:shadow-none`.
+ *
+ * No `border-radius` here on purpose: box-shadow already follows the element's
+ * own radius, and setting it would reshape square elements on focus.
+ */
+@layer base {
+  :focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(0, 132, 255, 0.4);
+  }
 }
 
 ::selection {

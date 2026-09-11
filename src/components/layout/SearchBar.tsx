@@ -14,7 +14,6 @@ export function SearchBar({ className }: { className?: string }) {
   const params = useSearchParams();
   const inputRef = useRef<HTMLInputElement>(null);
   const [value, setValue] = useState(params.get("q") ?? "");
-  const [focused, setFocused] = useState(false);
 
   // Keep in sync when navigating between search results.
   useEffect(() => {
@@ -52,12 +51,19 @@ export function SearchBar({ className }: { className?: string }) {
       onSubmit={submit}
       className={cn("min-w-0 flex-1", className)}
     >
+      {/*
+        The ring and lift are pure CSS via focus-within, not React state, so they
+        work before hydration and cannot desync. The inner input suppresses its
+        own ring (focus-visible:shadow-none) because this wrapper is the visible
+        field — otherwise both would draw one.
+      */}
       <div
         className={cn(
-          "flex h-12 w-full items-center gap-3 rounded-pill px-4 transition-[background-color,box-shadow] duration-200",
-          focused
-            ? "bg-surface shadow-[0_0_0_4px_rgba(0,132,255,0.4)]"
-            : "bg-field hover:bg-secondary-hover",
+          "flex h-12 w-full items-center gap-3 rounded-pill px-4",
+          "transition-[background-color,box-shadow] duration-200",
+          "bg-field hover:bg-secondary-hover",
+          "focus-within:bg-surface focus-within:hover:bg-surface",
+          "focus-within:shadow-[0_0_0_4px_rgba(0,132,255,0.4)]",
         )}
       >
         <Search className="size-5 shrink-0 text-ink-muted" aria-hidden="true" />
@@ -68,8 +74,6 @@ export function SearchBar({ className }: { className?: string }) {
           name="q"
           value={value}
           onChange={(e) => setValue(e.target.value)}
-          onFocus={() => setFocused(true)}
-          onBlur={() => setFocused(false)}
           placeholder="Search for ideas"
           aria-label="Search for ideas"
           className={cn(
